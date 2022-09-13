@@ -1,7 +1,7 @@
 CC = g++ 
 # EC 8/28 - Add a Make wildcard expansion function, so the list of files will be listed explicitely.
 SRCS = $(wildcard src/*.cpp)
-INC = ./src/
+INC = $(wildcard src/)
 OPTS = -std=c++17 -Wall -Werror -lpthread -O3
 
 EXEC = bin/prefix_scan

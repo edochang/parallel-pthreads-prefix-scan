@@ -31,6 +31,7 @@ void write_file(struct options_t*         args,
 	// Write solution to output file
 	for (int i = 0; i < opts->n_vals; ++i) {
 		out << opts->output_vals[i] << std::endl;
+		//printf("io: Writing from i(%d) the value: %d \n", i, opts->output_vals[i]); // debug statement
 	}
 
 	out.flush();

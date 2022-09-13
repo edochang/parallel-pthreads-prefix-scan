@@ -37,6 +37,7 @@
 
 # End of https://www.toptal.com/developers/gitignore/api/c++
 
+# Folders to ignore
 tests/
 .vscode/
 bin/

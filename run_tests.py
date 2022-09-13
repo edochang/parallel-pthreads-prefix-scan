@@ -7,10 +7,26 @@ from time import sleep
 #
 #  Feel free (a.k.a. you have to) to modify this to instrument your code
 #
+'''
+# Step 1 Test
+THREADS = [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32]
+LOOPS = [100000]
+INPUTS = ["seq_64_test.txt", "1k.txt", "8k.txt", "16k.txt" ]
 
 THREADS = [0]
-LOOPS = [1, 10]
-INPUTS = ["seq_64_test.txt"]
+LOOPS = [100000]
+INPUTS = ["seq_64_test.txt", "1k.txt", "8k.txt", "16k.txt" ]
+'''
+
+# Step 2 Test
+THREADS = [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32]
+LOOPS = [10, 100, 1000, 10000, 100000]
+INPUTS = ["seq_64_test.txt", "1k.txt", "8k.txt", "16k.txt" ]
+'''
+THREADS = [0]
+LOOPS = [10, 100, 1000, 10000, 100000]
+INPUTS = ["seq_64_test.txt", "1k.txt", "8k.txt", "16k.txt" ]
+'''
 
 csvs = []
 for inp in INPUTS:
