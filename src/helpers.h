@@ -15,6 +15,7 @@ struct prefix_sum_args_t {
   int                (*op)(int, int, int);
   int                n_loops;
   pthread_barrier_t* pthreadBarrier;  // To pass global barrier instance to threads
+  spin_barrier*       spinBarrier;
 };
 
 prefix_sum_args_t* alloc_args(int n_threads);
@@ -29,5 +30,6 @@ void fill_args(prefix_sum_args_t *args,
                bool spin,
                int (*op)(int, int, int),
                int n_loops,
-               pthread_barrier_t *pthreadBarrier  // To pass global barrier instance to threads
+               pthread_barrier_t *pthreadBarrier,  // To pass global barrier instance to threads
+               spin_barrier *spin_barrier
                );

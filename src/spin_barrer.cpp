@@ -7,17 +7,34 @@
  ************************/
 
 // When using header files definig your class definition, you must use the scope unary operator :: to specificy the class that the function implementaiton is for.
-pthread_barrier::pthread_barrier(int nThreads) {
-    // Setup pthread Barriers with default (NULL) attributes to wait for n_threads
-    pthread_barrier_init(&pthreadBarrier, NULL, nThreads);
+spin_barrier::spin_barrier(int nThreads) {
+    // initialize a semaphore using unnamed semaphores to allocate to process memory.  Assuming our program is multi-threaded vs. multi-process, given we are using pthreads.  pshared will be 0, so it's not shared across processes.
+    this->nThreads = nThreads;
+    sem_init(&arrival, 0, 1);
+    sem_init(&departure, 0, 0);
+    counter = 0;
 }
 
-void pthread_barrier::wait() {
-    pthread_barrier_wait(&pthreadBarrier);
+void spin_barrier::wait() {
+    sem_wait(&arrival);  // if 0 wait, otherwise decrement from arrival value of 1.
+    if (++counter < nThreads) {  // increment global atomic counter and check condition.
+        sem_post(&arrival);  // increment arrival.
+    }
+    else {
+        sem_post(&departure);  // increment departure
+    }
+    sem_wait(&departure);  // if 0 wait, otherwise decrement from departure value of 1.
+    if (--counter > 0) {  // decrement global atomic counter and check condition.
+        sem_post(&departure);  // increment departure
+    }
+    else {
+        sem_post(&arrival);  // increment arrival.
+    }
 }
 
-pthread_barrier::~pthread_barrier() {
+spin_barrier::~spin_barrier() {
     // destroy barrier when class object instance is deconstructed
-    pthread_barrier_destroy(&pthreadBarrier);
+    sem_destroy(&arrival);
+    sem_destroy(&departure);
 }
 

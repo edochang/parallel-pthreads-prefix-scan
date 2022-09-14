@@ -25,8 +25,10 @@ void* compute_prefix_sum(void *a)
     int (*scan_op)(int, int, int) = args->op;
     int nLoops = args->n_loops;
     pthread_barrier_t *pthreadBarrier = args->pthreadBarrier;
+    spin_barrier *spinBarrier = args->spinBarrier;
+    bool spin = args->spin;
 
-    cout << "pfx: Tid[" << nTid << "] Hello World" << endl;  // debug statement
+    // cout << "pfx: Tid[" << nTid << "] Hello World" << endl;  // debug statement
 
     // Calculate the padding for non-power of 2 elements, to use the balanced binary tree algorithm.
     int nPowerPad = ceil(log2(nValues));
@@ -45,7 +47,7 @@ void* compute_prefix_sum(void *a)
     int nTidScopeIndexStart = nTid * nTidRange;
     int nTidScopeIndexEnd = nTidScopeIndexStart + nTidRange;
 
-    cout << "pfx: Tid[" << nTid << "] Starting +-reduce operations with scope[" << nTidScopeIndexStart << ", " << nTidScopeIndexEnd << "]" << endl; // debug statement
+    // cout << "pfx: Tid[" << nTid << "] Starting +-reduce operations with scope[" << nTidScopeIndexStart << ", " << nTidScopeIndexEnd << "]" << endl; // debug statement
 
 
     /*  + - Reduce Operation (a.k.a. Upsweep Alogrithm) for Exclusive Read, Exlusive Write (EREW) PRAM
@@ -80,10 +82,15 @@ void* compute_prefix_sum(void *a)
                 break;
             }
         }
-        pthread_barrier_wait(pthreadBarrier);
+        if(spin) {
+            //cout << "pfx: Tid[" << nTid << "] Using custom semaphore barrier on reduction steps" << endl;  // debug statement
+            spinBarrier->wait();
+        } else {
+            pthread_barrier_wait(pthreadBarrier);
+        }
     }
 
-    cout << "pfx: Tid[" << nTid << "] Starting +-prescan operations with scope[" << nTidScopeIndexStart << ", " << nTidScopeIndexEnd << "]" << endl;  // debug statement
+    // cout << "pfx: Tid[" << nTid << "] Starting +-prescan operations with scope[" << nTidScopeIndexStart << ", " << nTidScopeIndexEnd << "]" << endl;  // debug statement
 
     /*  + - Prescan Operation (a.k.a. Downsweep Alogrithm) for Exclusive Read, Exlusive Write (EREW) PRAM
         % Algorithm is for inclusive prescan.
@@ -122,57 +129,15 @@ void* compute_prefix_sum(void *a)
                 }
             }
         }
-        pthread_barrier_wait(pthreadBarrier);
-    }
-
-    /*  + - Prescan Operation (a.k.a. Downsweep Alogrithm) for Exclusive Read, Exlusive Write (EREW) PRAM
-        % Algorithm is for exclusive prescan.
-        a[n−1] ← 0                                      %Settheidentity 
-        for d from (lg n)−1 downto 0 
-            in parallel for i from 0 to n−1 by 2^(d+1) 
-                t ← a[i+2^d−1]                          %Saveintemporary 
-                a[i+2^d−1] ← a[i+2^(d+1)−1]             %Setleftchild 
-                a[i+2^(d+1)−1] ← t + a[i+2^(d+1)−1]     %Setrightchild
-    */
-
-    /*
-    // Set Identity
-    //int nSumTemp = outputArray[nPaddedValues-1];
-    if (nTid == 0) {
-        outputArray[nPaddedValues-1] = 0;
-    }
-
-    pthread_barrier_wait(pthreadBarrier);
-
-    for (int d = log2(nPaddedValues)-1; d >= 0 ; d--) {
-        cout << "pfx: Tid[" << nTid << "] Reduce operations level: " << d << " of " << log2(nPaddedValues)-1 << endl;  // debug statement
-        stride = pow(2,d+1);
-        for (int i = 0; i <= nPaddedValues-1; i+=stride) {
-            int index2 = i + stride - 1;
-            int index1 = i + pow(2,d) - 1;
-            int nTemp = outputArray[index1];  // Issue: Facing cache coherence and interleaving issues.  Open question on how to solve this.
-
-            pthread_barrier_wait(pthreadBarrier);  // Everyone needs to capture the temp value locally before modifying.
-
-            if ((nTidScopeIndexStart < index1) && (index1 < nTidScopeIndexEnd)) {
-                outputArray[index1] = outputArray[index2];
-                cout << "pfx: Tid[" << nTid << "]: Step (" << d << ") Prescan - index("<< index1 << ") with value: " << outputArray[index2] << endl;  // debug statement
-            }
-
-            pthread_barrier_wait(pthreadBarrier);  // Everyone needs to wait for left child to be set.
-
-            if ((nTidScopeIndexStart < index2) && (index2 < nTidScopeIndexEnd)) {
-                outputArray[index2] = scan_op(nTemp, outputArray[index2], nLoops);
-                cout << "pfx: Tid[" << nTid << "]: Step (" << d << ") Prescan - index("<< index2 << ") with value: " << outputArray[index2] << endl;  // debug statement
-            }
+        if(spin) {
+            //out << "pfx: Tid[" << nTid << "] Using custom semaphore barrier on prescan steps" << endl;  // debug statement
+            spinBarrier->wait();
+        } else {
+            pthread_barrier_wait(pthreadBarrier);
         }
-        pthread_barrier_wait(pthreadBarrier);  // Everyone needs to sync-up after modifying the shared / global memory.
     }
-    */
-
-    // pthread_barrier_wait(pthreadBarrier);  // Everyone needs to wait before exiting their function.
     
-    cout << "pfx: Tid[" << nTid << "] End of prefix_sum.cpp." << endl;
+    // cout << "pfx: Tid[" << nTid << "] End of prefix_sum.cpp." << endl;
 
     return 0;
 }

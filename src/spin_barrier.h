@@ -3,14 +3,17 @@
 
 #include <pthread.h>
 #include <iostream>
+#include <atomic>
 
 // Additional headers / namespaces
 #include <semaphore.h>
 
+using namespace std;
+
 class spin_barrier {
 public:
     // Constructor with thread argument
-    spin_barrier(int);
+    spin_barrier(int nThreads);
     // method to call wait
     void wait();
     // Deconstruct the class object instance
@@ -19,20 +22,7 @@ private:
     int nThreads;
     sem_t arrival;
     sem_t departure;
-    int counter;
-};
-
-class pthread_barrier {
-    public:
-        // Constructor with thread argument
-        pthread_barrier(int);
-        // method to call wait
-        void wait();
-        // Deconstruct the class object instance
-        ~pthread_barrier();
-    private:
-        int nThreads;
-        pthread_barrier_t pthreadBarrier;
+    atomic<int> counter;
 };
 
 #endif

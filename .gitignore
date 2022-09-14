@@ -41,3 +41,6 @@
 tests/
 .vscode/
 bin/
+
+# Files to ignore
+temp.txt

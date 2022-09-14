@@ -32,6 +32,7 @@ int main(int argc, char **argv)
 
     // Setup pthread Barriers with default (NULL) attributes to wait for n_threads
     pthread_barrier_init(&g_pthreadBarrier_t, NULL, opts.n_threads);
+    spin_barrier *spinBarrier = new spin_barrier(opts.n_threads);
 
     cout << "main: Read input file: " << opts.in_file << endl;  // debug statement
 
@@ -50,7 +51,7 @@ int main(int argc, char **argv)
 
     //Moodified to pass barriers 
     fill_args(ps_args, opts.n_threads, n_vals, input_vals, output_vals,
-        opts.spin, scan_operator, opts.n_loops, &g_pthreadBarrier_t);
+        opts.spin, scan_operator, opts.n_loops, &g_pthreadBarrier_t, spinBarrier);
 
     // May need to do variable setup here to improve time.
 
@@ -92,4 +93,6 @@ int main(int argc, char **argv)
     // Free other buffers
     free(threads);
     free(ps_args);
+    pthread_barrier_destroy(&g_pthreadBarrier_t);  // Destroy pthread barrier.
+    delete spinBarrier;
 }

@@ -23,7 +23,8 @@ void fill_args(prefix_sum_args_t *args,
                bool spin,
                int (*op)(int, int, int),
                int n_loops,
-               pthread_barrier_t *pthreadBarrier  // To pass global barrier instance to threads
+               pthread_barrier_t *pthreadBarrier,  // To pass global barrier instance to threads
+               spin_barrier *spin_barrier
                ) {
     // Updated to pass global / shared pthread barrier to threads
     for (int i = 0; i < n_threads; ++i) {
@@ -36,7 +37,8 @@ void fill_args(prefix_sum_args_t *args,
             i,
             op,
             n_loops,
-            pthreadBarrier  // To pass global barrier instance to threads
+            pthreadBarrier,  // To pass global barrier instance to threads
+            spin_barrier
         };
     }
 }
