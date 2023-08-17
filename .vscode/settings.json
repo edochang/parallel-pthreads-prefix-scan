@@ -1,0 +1,19 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/media/sf_DevVM/cs_repo/handin-skeleton/bin",
+            "binaryPath": "/media/sf_DevVM/cs_repo/handin-skeleton/bin/prefix_scan",
+            "binaryArgs": []
+            //"binaryArgs": ["-i ''"]
+        }
+    ],
+    "makefile.configurations": [
+    
+    ],
+    "makefile.makefilePath": "./Makefile",
+    "files.associations": {
+        "ostream": "cpp",
+        "iostream": "cpp",
+        "cmath": "cpp"
+    }
+}
