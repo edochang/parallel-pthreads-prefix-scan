@@ -28,13 +28,12 @@ int main(int argc, char **argv)
     }
 
     // Setup threads
-    pthread_t *threads = sequential ? NULL : alloc_threads(opts.n_threads);;
-
+    pthread_t *threads = sequential ? NULL : alloc_threads(opts.n_threads);
     // Setup pthread Barriers with default (NULL) attributes to wait for n_threads
     pthread_barrier_init(&g_pthreadBarrier_t, NULL, opts.n_threads);
     spin_barrier *spinBarrier = new spin_barrier(opts.n_threads);
 
-    cout << "main: Read input file: " << opts.in_file << endl;  // debug statement
+    //cout << "main: Read input file: " << opts.in_file << endl;  // debug statement
 
     // Setup args & read input data
     prefix_sum_args_t *ps_args = alloc_args(opts.n_threads);
@@ -42,7 +41,7 @@ int main(int argc, char **argv)
     int *input_vals, *output_vals;
     read_file(&opts, &n_vals, &input_vals, &output_vals);
 
-    cout << "main: File has n_vals: " << n_vals << endl;  // debug statement
+    //cout << "main: File has n_vals: " << n_vals << endl;  // debug statement
 
     //"op" is the operator you have to use, but you can use "add" to test
     int (*scan_operator)(int, int, int);
@@ -59,8 +58,8 @@ int main(int argc, char **argv)
     auto start = std::chrono::high_resolution_clock::now();
 
     if (sequential)  {
-        cout << "main: Using Sequential Prefix Sum: " << sequential << endl;  // debug statement
-        cout << "main: Number of Values: " << n_vals << endl;
+        //cout << "main: Using Sequential Prefix Sum: " << sequential << endl;  // debug statement
+        //cout << "main: Number of Values: " << n_vals << endl;
 
         //sequential prefix scan
         output_vals[0] = input_vals[0];
@@ -70,14 +69,14 @@ int main(int argc, char **argv)
         }
     }
     else {
-        cout << "main: Starting threads..." << endl;  // debug statement
+        //cout << "main: Starting threads..." << endl;  // debug statement
 
         start_threads(threads, opts.n_threads, ps_args, compute_prefix_sum);
 
         // Wait for threads to finish
         join_threads(threads, opts.n_threads);
 
-        cout << "main: Threads joined..." << endl;  // debug statement
+        //cout << "main: Threads joined..." << endl;  // debug statement
     }
 
     //End timer and print out elapsed
@@ -88,7 +87,7 @@ int main(int argc, char **argv)
     // Write output data
     write_file(&opts, &(ps_args[0]));
 
-    cout << "main: Wrote output file" << endl;  // debug statement
+    //cout << "main: Wrote output file" << endl;  // debug statement
 
     // Free other buffers
     free(threads);

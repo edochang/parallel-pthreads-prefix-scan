@@ -5,10 +5,9 @@ prefix_sum_args_t* alloc_args(int n_threads) {
 }
 
 int next_power_of_two(int x) {
-    // Don't believe this function produces correct results.  Modified to produce the correct results.
     int pow = 1;
     int counter = 0;
-    while (pow < x) {
+    while (counter < x) {
         pow *= 2;
         counter++;
     }

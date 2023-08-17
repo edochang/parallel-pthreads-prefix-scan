@@ -32,7 +32,7 @@ void* compute_prefix_sum(void *a)
 
     // Calculate the padding for non-power of 2 elements, to use the balanced binary tree algorithm.
     int nPowerPad = ceil(log2(nValues));
-    int nPaddedValues = pow(2,nPowerPad);
+    int nPaddedValues = next_power_of_two(nPowerPad);
     //int nPad = nPaddedValues - nValues;
     // debug block
     /*
@@ -60,10 +60,10 @@ void* compute_prefix_sum(void *a)
     int stride = 0;
     for (int d = 0; d <= log2(nPaddedValues)-1; d++) {
         //cout << "pfx: Tid[" << nTid << "] Reduce operations level: " << d << " of " << log2(nPaddedValues)-1 << endl;  // debug statement
-        stride = pow(2,d+1);
+        stride = next_power_of_two(d+1);
         for (int i = 0; nPaddedValues-1; i+=stride) {
             int index2 = i + stride - 1;
-            int index1 = i + pow(2,d) - 1;
+            int index1 = i + next_power_of_two(d) - 1;
             if ((nTidScopeIndexStart < index2) && (index2 < nTidScopeIndexEnd)) {
                 if (d == 0) {
                     if (index2 >= nValues){
@@ -106,8 +106,8 @@ void* compute_prefix_sum(void *a)
     stride = 0;
     for (int d = log2(nPaddedValues)-1; d >= 1; d--) {
         //cout << "pfx: Tid[" << nTid << "] Prescan operations level: " << d << " of " << log2(nPaddedValues)-1 << endl;  // debug statement
-        stride = pow(2,d);
-        int nIPad = pow(2,d-1);
+        stride = next_power_of_two(d);
+        int nIPad = next_power_of_two(d-1);
         for (int i = nIPad; i < nPaddedValues-1; i+=stride) {
             int index2 = i + stride - 1;
             
