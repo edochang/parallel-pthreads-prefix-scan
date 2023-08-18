@@ -95,7 +95,7 @@ prefix_scan application needs the following arguments to run:
 - -l <number of loops that the operator will do> (int)
 - -s <use your barrier implementation, else default to pthreads barrier> (Optional)
 
-**./bin/prefix_scan argument instructions**
+**./bin/prefix_scan Argument Instructions**
 
     Usage:
         --in or -i <file_path>
